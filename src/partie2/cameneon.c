@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
-#include "agora.c"
+#include "types.h"
 
 const char* getCouleur(couleur coul){
     switch(coul){
@@ -34,40 +34,50 @@ int couleurComplementaire(int c1, int c2){
     }
 }
 
-void CameneonVie(void *arguments){
-    cameneon_id id;
-    couleur maCouleur, couleurAncienne,autreCouleur;
-    int maCouleurInterne;
+void mutationCameneon(Cameneon demandeur,Cameneon recepteur){
+   printf("je suisDDDDDDDD %d et ma couleur est %s et je mange du chevre feuille\n",demandeur.cameneon_id,getCouleur(demandeur.maCouleur));
+   printf("je suisRRRRRRRR %d et ma couleur est %s et je mange du chevre feuille\n",recepteur.cameneon_id,getCouleur(recepteur.maCouleur));
+}
 
-    sscanf((char * ) arguments, "%d - %d",&id,&maCouleurInterne);
-    maCouleur=transformerIntEnCouleur(maCouleurInterne);
-
+void Mutation(Cameneon *args){
+    Cameneon demandeur=args[0];
+    Cameneon recepteur=args[1];
+    //Random random = new Random();
+    //int sec = random.Next(3,10)*1000;
     while(1){
-        printf("je suis %d et ma couleur est %s et je mange du chevre feuille\n",id,getCouleur(maCouleur));
-        printf("je suis %d et ma couleur est %s et je m'entraine\n",id,getCouleur(maCouleur));
-        printf("je suis %d et ma couleur est %s et je vais pour une mutation vers agora\n",id,getCouleur(maCouleur));
-        autreCouleur = mutation(id,maCouleur);
-        couleurAncienne = maCouleur;
-        maCouleur = transformerIntEnCouleur(couleurComplementaire(transformerCouleurEnInt(maCouleur),
-        transformerCouleurEnInt(autreCouleur)));
-        printf("je suis %d et ma couleur est %s et ma mutation est terminee\n",id,getCouleur(maCouleur));
+        //System.Threading.Thread.Sleep(sec);
+        mutationCameneon(demandeur,recepteur);
     }
 
 }
 
 int main(void){
     couleur couleurs[NB_CAMENEON]={Jaune,Bleu,Rouge,Bleu};
-    char arguments[255][NB_CAMENEON];
-    pthread_t threads[NB_CAMENEON];
+    Cameneon cameneons[NB_CAMENEON];
+    pthread_t threads[20];
     int i;
 
-    initMutation();
     for(int i=0;i<NB_CAMENEON;i++){
-        sprintf(arguments[i],"%d - %d",i,transformerCouleurEnInt(couleurs[i]));
-        pthread_create(&threads[i],NULL,(void *(*)())CameneonVie,arguments[i]);
+        cameneons[i]=new Cameneon();
+        cameneons[i].cameneon_id=i;
+        cameneons[i].maCouleur = transformerCouleurEnInt(couleurs[i]);
+    }
+    for(int j=0;i<NB_CAMENEON;j++){
+        int index=j+1;
+        Cameneon arguments[2];
+        Cameneon arguments2[2];
+        while(index<NB_CAMENEON){
+            arguments[0]=cameneons[j];
+            arguments[1]=cameneons[index];
+            arguments2[0]=arguments[1];
+            arguments2[1]=arguments[0];
+            pthread_create(&threads[j],Mutation,&arguments);
+            pthread_create(&threads[j+NB_CAMENEON],Mutation,&arguments2);
+        } 
     }
     for(int i=0;i<NB_CAMENEON;i++){
         pthread_join(threads[i],NULL);
+        pthread_join(threads[i+NB_CAMENEON],NULL);
     }
     return 0;
 }

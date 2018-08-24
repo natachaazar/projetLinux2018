@@ -3,6 +3,6 @@ typedef int cameneon_id;
 typedef enum {Bleu, Rouge, Jaune} couleur;
 typedef struct {
     int cameneon_id;
-    couleur maCouleur,autreCouleur;
+    int maCouleur,autreCouleur;
     int enAttente;
     } Cameneon;
