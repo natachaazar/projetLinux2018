@@ -1,8 +1,9 @@
 #define NB_CAMENEON 4
 typedef int cameneon_id;
 typedef enum {Bleu, Rouge, Jaune} couleur;
-typedef struct {
+typedef struct strucure1{
     int cameneon_id;
-    couleur maCouleur,autreCouleur;
+    int maCouleur,autreCouleur;
     int enAttente;
+    pthread_mutex_t lock;
     } Cameneon;
